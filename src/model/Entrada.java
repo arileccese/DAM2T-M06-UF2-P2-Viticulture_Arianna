@@ -13,7 +13,7 @@ public class Entrada {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "id")
-	private String valor;
+	private Long valor;
 
 	@Column(name = "instruccion")
 	private String instruccion;
