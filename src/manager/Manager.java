@@ -98,7 +98,7 @@ public class Manager {
 	}
 
 	private void addCampo(String[] split) {
-		c = new Campo(b);
+		c = new Campo(b , split[1]);
 		tx = session.beginTransaction();
 		
 		int id = (Integer) session.save(c);

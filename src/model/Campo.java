@@ -35,7 +35,7 @@ public class Campo {
 	
 	public Campo() {}
 
-	public Campo(Bodega b) {
+	public Campo(Bodega b, String nombre) {
 		this.bodega = b;
 		this.vids = new ArrayList<>();
 		this.nombre = nombre;
