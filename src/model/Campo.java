@@ -30,19 +30,31 @@ public class Campo {
 	@JoinColumn(name = "id_bodega")
 	private Bodega bodega;
 	
+	@Column(name = "nombre")
+	private String nombre;
+	
 	public Campo() {}
 
 	public Campo(Bodega b) {
 		this.bodega = b;
 		this.vids = new ArrayList<>();
+		this.nombre = nombre;
 	}
 
 	@Override
 	public String toString() {
-		return "Campo [id_campo=" + id_campo + ", vids=" + Arrays.toString(vids.toArray()) + ", bodega="
+		return "Campo [id_campo=" + id_campo + ", nombre= " + nombre + ", vids=" + Arrays.toString(vids.toArray()) + ", bodega="
 				+ bodega.toString() + "]";
 	}
 
+	public String getNombre() {
+	    return nombre;
+	}
+
+	public void setNombre(String nombre) {
+	    this.nombre = nombre;
+	}
+	
 	public void addVid(Vid v) {
 		this.vids.add(v);		
 	}
