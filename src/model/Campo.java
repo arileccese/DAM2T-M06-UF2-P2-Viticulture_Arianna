@@ -30,6 +30,14 @@ public class Campo {
 	@JoinColumn(name = "id_bodega")
 	private Bodega bodega;
 	
+	public int getId_campo() {
+		return id_campo;
+	}
+
+	public void setId_campo(int id_campo) {
+		this.id_campo = id_campo;
+	}
+
 	@Column(name = "nombre")
 	private String nombre;
 	

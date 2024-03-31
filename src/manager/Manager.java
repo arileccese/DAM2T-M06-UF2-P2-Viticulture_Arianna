@@ -23,6 +23,7 @@ public class Manager {
 	private Bodega b;
 	private Campo c;
 
+
 	private Manager () {
 		this.entradas = new ArrayList<>();
 	}
@@ -76,14 +77,39 @@ public class Manager {
 		}
 	}
 
+	
 	private void vendimia() {
-		this.b.getVids().addAll(this.c.getVids());
-		
-		tx = session.beginTransaction();
-		session.save(b);
-		
-		tx.commit();
+	    tx = session.beginTransaction();
+	    
+	    try {
+	        // Guardar la entidad b antes de la actualización
+	        session.save(b);
+	        
+	        // Ejecutar la consulta SQL para actualizar la tabla vid
+	        Query query = session.createSQLQuery("UPDATE vid SET campo_id = NULL WHERE bodega_id IS NOT NULL AND campo_id IS NOT NULL");
+	        int rowsAffected = query.executeUpdate();
+	        
+	        // Comprobar si se afectaron filas
+	        if (rowsAffected > 0) {
+	            System.out.println("Se actualizaron " + rowsAffected + " filas en la tabla vid.");
+	        } else {
+	            System.out.println("No se encontraron filas para actualizar en la tabla vid.");
+	        }
+	        
+	        // Confirmar la transacción
+	        tx.commit();
+	    } catch (Exception e) {
+	        // Si ocurre algún error, hacer rollback de la transacción
+	        if (tx != null) {
+	            tx.rollback();
+	        }
+	        e.printStackTrace();
+	    } finally {
+	        // Cerrar la sesión
+	        session.close();
+	    }
 	}
+
 
 	private void addVid(String[] split) {
 		Vid v = new Vid(TipoVid.valueOf(split[1].toUpperCase()), Integer.parseInt(split[2]));

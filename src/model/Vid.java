@@ -16,11 +16,47 @@ public class Vid {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = true)
 	private int id;
+	
 	@Column(name = "tipo_vid", nullable = true)
 	private TipoVid vid;
+	
 	@Column(name = "cantidad", nullable = true)
 	private int cantidad;
 	
+	@Column(name = "bodega_id" , nullable = true)
+	private long bodega_id;
+	
+	@Column(name = "campo_id", nullable = true)
+	private long campo_id;
+	
+	public long getBodega_id() {
+		return bodega_id;
+	}
+
+	public void setBodega_id(long bodega_id) {
+		this.bodega_id = bodega_id;
+	}
+
+	public long getCampo_id() {
+		return campo_id;
+	}
+
+	public void setCampo_id(long campo_id) {
+		this.campo_id = campo_id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setVid(TipoVid vid) {
+		this.vid = vid;
+	}
+
+	public void setCantidad(int cantidad) {
+		this.cantidad = cantidad;
+	}
+
 	public Vid() {}
 		
 	public Vid(TipoVid vid, int cantidad) {
