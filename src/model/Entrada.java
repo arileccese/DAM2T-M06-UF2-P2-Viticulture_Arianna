@@ -15,6 +15,18 @@ public class Entrada {
 	@Column(name = "id")
 	private Long valor;
 
+	public Long getValor() {
+		return valor;
+	}
+
+	public void setValor(Long valor) {
+		this.valor = valor;
+	}
+
+	public void setInstruccion(String instruccion) {
+		this.instruccion = instruccion;
+	}
+
 	@Column(name = "instruccion")
 	private String instruccion;
 	
