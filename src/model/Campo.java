@@ -51,9 +51,10 @@ public class Campo {
 
 	@Override
 	public String toString() {
-		return "Campo [id_campo=" + id_campo + ", nombre= " + nombre + ", vids=" + Arrays.toString(vids.toArray()) + ", bodega="
-				+ bodega.toString() + "]";
+	    String bodegaString = (bodega != null) ? bodega.toString() : "null";
+	    return "Campo [id_campo=" + id_campo + ", nombre=" + nombre + ", vids=" + Arrays.toString(vids.toArray()) + ", bodega=" + bodegaString + "]";
 	}
+
 
 	public String getNombre() {
 	    return nombre;
