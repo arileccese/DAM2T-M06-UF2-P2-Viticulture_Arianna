@@ -65,20 +65,23 @@ public class Manager {
 			try {
 				System.out.println(entrada.getInstruccion());
 				switch (entrada.getInstruccion().toUpperCase().split(" ")[0]) {
+				
 					case "B":
-						 String[] split = entrada.getInstruccion().split(" ");
-						    Bodega bodega = new Bodega(split[1]);
-						    addBodega(bodega);
-						    break;
+						addBodega(entrada.getInstruccion().split(" "));
+						break;
+						    
 					case "C":
 						addCampo(entrada.getInstruccion().split(" "));
 					    break;
+					    
 					case "V":
 						addVid(entrada.getInstruccion().split(" "));
-						break;
+					    break;
+					    
 					case "#":
 						vendimia();
 						break;
+						
 					default:
 						System.out.println("Instruccion incorrecta");
 				}
@@ -92,38 +95,47 @@ public class Manager {
 	}
 
 	
-	private void vendimia() {
-	    tx = session.beginTransaction();
-	    
-	    try {
-	        // Guardar la entidad b antes de la actualización
-	        session.save(b);
-	        
-	        // Ejecutar la consulta SQL para actualizar la tabla vid
-	        Query query = session.createSQLQuery("UPDATE vid SET campo_id = NULL WHERE bodega_id IS NOT NULL AND campo_id IS NOT NULL");
-	        int rowsAffected = query.executeUpdate();
-	        
-	        // Comprobar si se afectaron filas
-	        if (rowsAffected > 0) {
-	            System.out.println("Se actualizaron " + rowsAffected + " filas en la tabla vid.");
-	        } else {
-	            System.out.println("No se encontraron filas para actualizar en la tabla vid.");
-	        }
-	        
-	        // Confirmar la transacción
-	        tx.commit();
-	    } catch (Exception e) {
-	        // Si ocurre algún error, hacer rollback de la transacción
-	        if (tx != null) {
-	            tx.rollback();
-	        }
-	        e.printStackTrace();
-	    } finally {
-	        // Cerrar la sesión
-	        session.close();
-	    }
-	}
+//	private void vendimia() {
+//	    tx = session.beginTransaction();
+//	    
+//	    try {
+//	        // Guardar la entidad b antes de la actualización
+//	        session.save(b);
+//	        
+//	        // Ejecutar la consulta SQL para actualizar la tabla vid
+//	        Query query = session.createSQLQuery("UPDATE vid SET campo_id = NULL WHERE bodega_id IS NOT NULL AND campo_id IS NOT NULL");
+//	        int rowsAffected = query.executeUpdate();
+//	        
+//	        // Comprobar si se afectaron filas
+//	        if (rowsAffected > 0) {
+//	            System.out.println("Se actualizaron " + rowsAffected + " filas en la tabla vid.");
+//	        } else {
+//	            System.out.println("No se encontraron filas para actualizar en la tabla vid.");
+//	        }
+//	        
+//	        // Confirmar la transacción
+//	        tx.commit();
+//	    } catch (Exception e) {
+//	        // Si ocurre algún error, hacer rollback de la transacción
+//	        if (tx != null) {
+//	            tx.rollback();
+//	        }
+//	        e.printStackTrace();
+//	    } finally {
+//	        // Cerrar la sesión
+//	        session.close();
+//	    }
+//	}
 
+    private void vendimia() {
+    this.b.getVids().addAll(this.c.getVids());
+       
+    tx = session.beginTransaction();
+    session.save(b);
+       
+     tx.commit();
+    }
+ 
 
 //	private void addVid(String[] split) {
 //		
@@ -139,24 +151,17 @@ public class Manager {
 //	}
 	
 	private void addVid(String[] split) {
-	    // Suponiendo que split[1] es el tipo, split[2] es la cantidad,
-	    // split[3] es el id de la bodega, y split[4] es el id del campo.
-	    Vid v = new Vid(TipoVid.valueOf(split[1].toUpperCase()), Integer.parseInt(split[2]));
-	    v.setBodega_id(Long.parseLong(split[3]));
-	    v.setCampo_id(Long.parseLong(split[4]));
-	    
-	    // Crear un documento para MongoDB con todos los detalles necesarios
-	    Document vidDoc = new Document("tipo_vid", v.getVid().name())
-	                              .append("cantidad", v.getCantidad())
-	                              .append("bodega_id", v.getBodega_id())
-	                              .append("campo_id", v.getCampo_id());
-	    
-	    // Insertar el documento en la colección 'vid'
-	    database.getCollection("vid").insertOne(vidDoc);
-	    
-	    // Imprimir que el vid ha sido añadido
-	    System.out.println("Vid añadido: " + v);
+
+	      System.out.println("vid añadido: " );
+	        collection = database.getCollection("campo");
+	        Document last = collection.find().sort(new Document("_id", -1)).first();
+	       
+	        collection = database.getCollection("vid");
+	        Document document  = new Document().append("tipo_vid", split[1].toString())
+	        .append("cantidad",Integer.parseInt(split[2])).append("campo", last);
+	        collection.insertOne(document);
 	}
+
 
 
 	private void addCampo(String[] split) {
@@ -169,15 +174,16 @@ public class Manager {
 //		tx.commit();
 //	
 
-	    Campo c = new Campo(b, split[0]);
-	    
-	    Document campoDoc = new Document("nombre", c.getNombre());
-	    database.getCollection("campo").insertOne(campoDoc);	    
-	    System.out.println("campo añadido: " + c);	    		
+        Campo c = new Campo(b, split[1]);
+        collection = database.getCollection("bodega");//añado la ultima bodega
+        Document last = collection.find().sort(new Document("_id", -1)).first();
+ 
+        Document campoDoc = new Document("nombre", c.getNombre()).append("Bodega", last);
+        database.getCollection("campo").insertOne(campoDoc);
 	}
 	
 
-	private void addBodega(Bodega bodega) {
+	private void addBodega(String[] split) {
 //		b = new Bodega(split[1]);
 //		tx = session.beginTransaction();
 //		
@@ -186,12 +192,12 @@ public class Manager {
 //		
 //		tx.commit();
 		
-	    collection = database.getCollection("bodega");
-	    
-	    Document document  = new Document().append("Nombre", bodega.getNombre());
-	    
-	    //insert document
-	    collection.insertOne(document);
+	
+        Bodega b = new Bodega(split[1]);
+        
+        Document bodegaDocumento = new Document("nombre", b.getNombre());
+        database.getCollection("bodega").insertOne(bodegaDocumento);
+        
 	}
 
 	private ArrayList <Entrada> getEntrada() {
@@ -206,10 +212,9 @@ public class Manager {
 		for (Document document : collection.find()) {
 			Entrada input  = new Entrada();
 			input.setInstruccion(document.getString("instruccion"));
-			this.entradas.add(input);	
-			System.out.println(input);
+			this.entradas.add(input); System.out.println(input);
 		}
-		System.out.println("Leido");
+	
 		return entradas;
 	}
 
